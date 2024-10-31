@@ -1,28 +1,49 @@
-#Bonjour ! 
-#J'espère que vous pourrez m'aider à créer un système de surveillance des prix. Pour élaborer une version bêta du système limitée à un seul revendeur, 
-#Books to Scrape, le mieux est probablement de suivre les étapes que j'ai définies dans le fichier des exigences ci-joint.
-#Lorsque vous aurez terminé, envoyez-moi un lien vers votre repository GitHub et un fichier compressé des données qu'il génère. Avec le code, 
-#le repo doit inclure un requirements.txt et un README.md complété afin que j’exécute le code avec succès et produise des données ! 
-#Le repo ne doit pas inclure les données et images extraites.
-#Après avoir terminé le code, envoyez-moi un fichier ZIP des données générées. 
-#Assurez-vous d'organiser toutes les données et images que vous avez extraites de manière simple.
-#Pouvez-vous également m'envoyer un mail décrivant comment nous pourrions utiliser le code pour établir un pipeline ETL 
-#(de l'anglais Extract, Transform, Load, signifiant extraire, transformer, charger) ? Cela sera utile pour le montrer à mon responsable.
-#Cordialement,
-#Sam
-#Responsable d'équipe
-#Books Online 
-
 import requests
-
+import csv
 from bs4 import BeautifulSoup as BS
 
+"""
+product_page_url =
+upc =
+book_title =
+price_including_tax =
+price_excluding_tax =
+number_available =
+product_description =
+category =
+review_rating =
+image_url =
+"""
 
-url = "http://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
-page = requests.get(url)
-soup = BS(page.content, "html.parser")
-titre_h1 = soup.find("h1")
+
+def extraction_data(elements):
+    resultat = []
+    for element in elements:
+        resultat.append(element.string)
+    return resultat
+    
 
 
-print(titre_h1)
 
+def ecriture_data(data, en_tete, table_info):
+    with open(data, 'w') as fichier_csv:
+        writer = csv.writer(fichier_csv, delimiter=',')
+        writer.writerow(en_tete)
+        writer.writerow(table_info)
+
+
+def etl():
+    url = "http://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
+    reponse = requests.get(url)
+    page = reponse.content
+    soup = BS(page, "html.parser")
+    
+    table_info = soup.find_all("td")
+    
+    en_tete = ["Universal Product code", "Type", "Prix ttc", "Prix ht", "Qt dispo", "Nb d'avis"]
+    table_info = extraction_data(table_info)
+    
+    ecriture_data("data/data.csv", en_tete, table_info)
+    
+    
+etl()
